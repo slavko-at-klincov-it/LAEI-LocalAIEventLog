@@ -1,0 +1,81 @@
+name: LocalAIEventLog
+options:
+  bundleIdPrefix: com.laei
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "26.3"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGNING_REQUIRED: false
+    CODE_SIGNING_ALLOWED: false
+
+targets:
+  LocalAIEventLog:
+    type: application
+    platform: macOS
+    sources:
+      - path: LocalAIEventLog
+        excludes:
+          - "**/.DS_Store"
+      - path: LocalAIEventLogShared
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.laei.LocalAIEventLog
+        INFOPLIST_FILE: LocalAIEventLog/App/Info.plist
+        CODE_SIGN_ENTITLEMENTS: LocalAIEventLog/App/LocalAIEventLog.entitlements
+        ENABLE_APP_SANDBOX: false
+        ENABLE_HARDENED_RUNTIME: false
+        PRODUCT_NAME: "Local AI Event Log"
+        SWIFT_STRICT_CONCURRENCY: complete
+        LD_RUNPATH_SEARCH_PATHS:
+          - "@executable_path/../Frameworks"
+    dependencies:
+      - target: LocalAIEventLogWidget
+        embed: true
+        codeSign: true
+
+  LocalAIEventLogWidget:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: LocalAIEventLogWidget
+        excludes:
+          - "**/.DS_Store"
+      - path: LocalAIEventLogShared
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.laei.LocalAIEventLog.Widget
+        INFOPLIST_FILE: LocalAIEventLogWidget/Info.plist
+        CODE_SIGN_IDENTITY: "-"
+        SWIFT_STRICT_CONCURRENCY: complete
+        LD_RUNPATH_SEARCH_PATHS:
+          - "@executable_path/../Frameworks"
+          - "@executable_path/../../../../Frameworks"
+    entitlements:
+      path: LocalAIEventLogWidget/Widget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.laei.LocalAIEventLog
+
+  LocalAIEventLogTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: LocalAIEventLogTests
+        excludes:
+          - "**/.DS_Store"
+    dependencies:
+      - target: LocalAIEventLog
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.laei.LocalAIEventLogTests
+        CODE_SIGN_IDENTITY: "-"
